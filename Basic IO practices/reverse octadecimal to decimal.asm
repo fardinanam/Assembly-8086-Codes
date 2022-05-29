@@ -25,7 +25,7 @@
         MOV DL, '1' ;WILL PRINT 1
         INT 21H  
         MOV DL, BL  ;WILL PRINT 6
-        INT 21H     ;B == 16 IN REVERSE HEPTADECIMAL
+        INT 21H     ;B == 16 IN REVERSE OCTADECIMAL
         
         ;RETURN 0
         MOV AH, 4CH

@@ -1,0 +1,62 @@
+.MODEL SMALL
+.STACK 100H
+.DATA
+    CR EQU 0DH
+    LF EQU 0AH
+    CRLF DB CR, LF, '$' 
+    EQUILATERAL DB 'EQUILATERAL$'
+    ISOSCELES DB 'ISOSCELES$'
+    SCALAR DB 'SCALAR$'
+.CODE
+    MAIN PROC  
+        ;Initialize Data Segment
+        MOV AX, @DATA
+        MOV DS, AX
+        
+        MOV AH, 1
+        INT 21H
+        MOV BH, AL ;MOV FIRST INPUT TO BH
+
+        INT 21H
+        MOV BL, AL ;MOV SECOND INPUT TO BL
+
+        INT 21H
+        MOV CH, AL ;MOV THIRD INPUT TO CH
+
+        MOV AH, 9
+        LEA DX, CRLF
+        INT 21H
+
+        ;NOW CHECK
+        ;IF BH == BL && BH == CH
+        CMP BH, BL
+        JNE ELIF ;IF NOT EQUAL THEN IT CAN'T BE EQUILATERAL. SO JUMP TO ELIF
+        CMP BH, CH ;IF EQUAL THEN CHECK IF OTHER TWO ARE EQUAL TOO
+        JNE ELIF ;IF NOT EQUAL THEN IT CAN'T BE EQUILATERAL. SO JUMP TO ELIF
+        ;THEN
+        LEA DX, EQUILATERAL ;IF EQUAL, PRINT "EQUILATERAL"
+        JMP END_IF
+
+        ;ELSE IF BH == BL || BH == DH || BL == DH
+        ELIF:
+        CMP BH, BL
+        JE THEN ;IF EQUAL THEN IT IS ISOSCELES
+        CMP BH, CH
+        JE THEN ;IF EQUAL THEN IT IS ISOSCELES
+        CMP BL, CH
+        JNE ELSE ;IF NOT EQUAL THEN NO TWO SIDES ARE EQUAL SO, IT MUST BE SCALAR
+        THEN: ;IF ANY OF THE ABOVE THREE IS TRUE THEN IT IS ISOSCELES. JUMP TO ELSE
+        LEA DX, ISOSCELES ;PRINT "ISOSCELES"
+        JMP END_IF
+
+        ELSE:
+        LEA DX, SCALAR ;PRINT "SCALAR"
+        
+        END_IF:
+        INT 21H
+        
+        ;RETURN 0
+        MOV AH, 4CH
+        INT 21H
+    MAIN ENDP        
+END MAIN

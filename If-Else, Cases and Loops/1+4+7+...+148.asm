@@ -9,8 +9,14 @@
         MOV AX, @DATA
         MOV DS, AX
         
-        
-        
+        MOV BX, 1
+        MOV CX, 0
+        LOOP_:
+            ADD CX, BX
+            ADD BX, 3
+
+            CMP BX, 151
+            JNE LOOP_
         ;RETURN 0
         MOV AH, 4CH
         INT 21H
