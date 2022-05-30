@@ -7,11 +7,15 @@
     INPUT_MSG DB 'Number of elements in the array: $'
     ARRAY_INPUT_MSG DB 'Array elements:', CR, LF, '$'
 
-    I DW ?  ;For outer while loop counter in insertion sort
-    J DW ?  ;For inner while loop counter in insertion sort
-    KEY DW ?    ;To store key in insertion sort
-    N DW ?  ;Stores the number of inputs
-    ARR DW 100 DUP(?) ;The array that we will sort
+    ;FOUND DB 'Found$'
+    ;NOTFOUND DB 'Not found$'
+
+    FLAG DB 0
+    I DW ?              ;Used for indexing in insertion sort and binary search
+    J DW ?              ;Used for indexing in insertion sort and binary search
+    KEY DW ?            ;To store key in insertion sort
+    N DW ?              ;Stores the number of inputs
+    ARR DW 100 DUP(?)   ;The array that we will sort
 .CODE
     MAIN PROC  
         ;Initialize Data Segment
@@ -26,23 +30,29 @@
         CALL INPUT_INTEGER
         MOV N, DX
         ;Print newline
-        CALL PRINT_NEWLINE ;Changes DX and prints newline
+        CALL PRINT_NEWLINE          ;Changes DX and prints newline
         ;Print message
         MOV AH, 9
         LEA DX, ARRAY_INPUT_MSG
         INT 21H
         ;Input N integers
         MOV CX, N
-        MOV SI, 0 ;Point SI to the address of ARR 
+        MOV SI, 0                   ;Point SI to the address of ARR 
         TOP:
-            CALL INPUT_INTEGER ;Saves the input in DX
-            MOV WORD ARR[SI], DX ;Store the input in the array
-            CALL PRINT_NEWLINE ;Changes DX and prints newline
-            ADD SI, 2 ;Increase the pointer to array by 2 bytes to point to the next element of the array
+            CALL INPUT_INTEGER      ;Saves the input in DX
+            MOV WORD ARR[SI], DX    ;Store the input in the array
+            CALL PRINT_NEWLINE      ;Changes DX and prints newline
+            ADD SI, 2               ;Increase the pointer to array by 2 bytes to point to the next element of the array
         LOOP TOP
 
         CALL INSERTION_SORT
         CALL PRINT_NEWLINE
+        CALL PRINT_ARRAY        
+        ; CALL INPUT_INTEGER
+        ; MOV KEY, DX
+        ; CALL BINARY_SEARCH
+
+        END:
         ;return 0
         MOV AH, 4CH
         INT 21H
@@ -74,17 +84,19 @@
             ;else keep taking input
             ;Fast convert character to digit, also clears AH
             AND AX, 000FH
-            MOV BX, AX ;Save AX in BX
+            MOV BX, AX          ;Save AX in BX
             ;DX = DX * 10 + BX
-            MOV AX, 10 ;AX = 10
-            MUL DX ;AX = AX * CX //// THOUGH MUL CHANGES DX, IT DOESN'T AFFECT OUT CALCULATIONS
-            ADD AX, BX ;AX = AX + BX
-            MOV DX, AX ;Stores the final value
+            MOV AX, 10          ;AX = 10
+            MUL DX              ;AX = AX * CX //// THOUGH MUL CHANGES DX, IT DOESN'T AFFECT OUT CALCULATIONS
+            ADD AX, BX          ;AX = AX + BX
+            MOV DX, AX          ;Stores the final value
             JMP INPUT_LOOP            
         END_INPUT_LOOP:
         RET
     INPUT_INTEGER ENDP
 
+    ;Function that sorts the array ARR
+    ;changes the registers BX, CX and the variables I and J
     INSERTION_SORT PROC
         ;for I = 1
         MOV I, 1 ;Initialize I to 1
@@ -95,13 +107,13 @@
             JGE END_FOR
             ;KEY = ARR[I]
             MOV BX, I
-            SHL BX, 1  ;Offset ARR index by multiplying 2 with I
-            MOV CX, ARR[BX] ;CX is used as a temporary variable
+            SHL BX, 1           ;Offset ARR index by multiplying 2 with I
+            MOV CX, ARR[BX]     ;CX is used as a temporary variable
             MOV KEY, CX
             ;J = I - 1
             MOV CX, I
             DEC CX
-            MOV J, CX   ;CX is used as a temporary variable
+            MOV J, CX           ;CX is used as a temporary variable
 
             WHILE:
                 ;if(J < 0) then break the loop
@@ -109,7 +121,7 @@
                 JL END_WHILE
                 ;or if(ARR[J] <= KEY) then break the loop
                 MOV BX, J
-                SHL BX, 1  ;Offset ARR index by multiplying 2 with I
+                SHL BX, 1       ;Offset ARR index by multiplying 2 with I
                 MOV CX, ARR[BX] ;CX is used as a temporary variable
                 CMP CX, KEY
                 JLE END_WHILE
@@ -129,11 +141,112 @@
             INC BX
             SHL BX, 1
             MOV CX, KEY
-            MOV ARR[BX], CX ;CX is used as a temporary variable
+            MOV ARR[BX], CX     ;CX is used as a temporary variable
             
-            INC I   ;I++
+            INC I               ;I++
             JMP FOR
         END_FOR:
         RET
     INSERTION_SORT ENDP
+
+    PRINT_ARRAY PROC
+        LEA SI, ARR
+        MOV CX, N
+        
+        TOP_PRINT_ARRAY:
+            MOV BX, [SI]        
+            ;if(AX < -1) then the number is positive
+            CMP BX, 0
+            JGE POSITIVE        
+            ;else, the number is negative
+            MOV AH, 1           
+            MOV DL, '-'         ;Print a '-' sign
+            INT 21H
+            NEG BX              ;make BX positive
+
+            POSITIVE:
+            MOV AX, BX
+            MOV I, 0        ;Initialize character count
+            PUSH_WHILE:
+                XOR DX, DX  ;clear DX
+                MOV BX, 10  ;BX has the divisor //// AX has the dividend
+                DIV BX
+                ;quotient is in AX and remainder is in DX
+                PUSH DX     ;Division by 10 will have a remainder less than 8 bits
+                INC I       ;I++
+                ;if(AX == 0) then break the loop
+                CMP AX, 0
+                JE END_PUSH_WHILE
+                ;else continue
+                JMP PUSH_WHILE
+            END_PUSH_WHILE:
+            MOV AH, 2
+            POP_WHILE:
+                POP DX      ;Division by 10 will have a remainder less than 8 bits
+                ADD DL, '0'
+                INT 21H     ;So DL will have the desired character
+
+                DEC I       ;I--
+                ;if(I <= 0) then end loop
+                CMP I, 0
+                JLE END_POP_WHILE
+                ;else continue
+                JMP POP_WHILE
+            END_POP_WHILE:
+            MOV DL, ','     ;print a comma
+            INT 21H
+
+            ADD SI, 2           ;Point to next element of the array
+        LOOP TOP_PRINT_ARRAY
+        RET
+    PRINT_ARRAY ENDP
+
+    ;Checks if the value stored in KEY is in the ARR
+    ;If found, saves the index of the element in BX
+    ;else saves -1 in BX
+    BINARY_SEARCH PROC
+        MOV BX, -1
+        ;Initializing I and J to 0 and N - 1
+        MOV I, 0
+        MOV CX, N
+        DEC CX
+        MOV J, CX               ;CX is used as a temporary variable
+
+        SEARCH_WHILE:
+            ;if(I >= J) break the loop
+            MOV CX, I
+            CMP CX, J
+            JGE END_SEARCH_WHILE
+            ;else continue in the loop
+            ;CX(MID) = (I + J) / 2 
+            MOV CX, I
+            ADD CX, J
+            SHR CX, 1
+            ;Save ARR[MID] in BX and compare with the key
+            MOV SI, CX
+            SHL SI, 1
+            MOV SI, ARR[SI]
+            ;compare
+            CMP KEY, SI
+            JE FOUND            ;if(KEY == ARR(MID)) found
+            JG GREATER          ;else if(KEY > ARR(MID)) then it is greater else, smaller
+            SMALLER:
+                ;if KEY < ARR(MID) then J = MID - 1
+                DEC CX
+                MOV J, CX       
+                JMP DEFAULT
+            GREATER:
+                ;if KEY > ARR(MID) then I = MID + 1
+                INC CX
+                MOV I, CX
+                JMP DEFAULT
+            FOUND:
+                ;if KEY == ARR(MID) then save the index in AX and return
+                MOV BX, CX
+                JMP END_SEARCH_WHILE
+            DEFAULT:
+            JMP SEARCH_WHILE
+        END_SEARCH_WHILE:
+        RET
+    BINARY_SEARCH ENDP
 END MAIN
