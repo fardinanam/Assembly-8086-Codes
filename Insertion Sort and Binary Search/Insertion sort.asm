@@ -7,7 +7,10 @@
     INPUT_MSG DB 'Number of elements in the array: $'
     ARRAY_INPUT_MSG DB 'Array elements:', CR, LF, '$'
 
-    N DW ? ;Stores the number of inputs
+    I DW ?  ;For outer while loop counter in insertion sort
+    J DW ?  ;For inner while loop counter in insertion sort
+    KEY DW ?    ;To store key in insertion sort
+    N DW ?  ;Stores the number of inputs
     ARR DW 100 DUP(?) ;The array that we will sort
 .CODE
     MAIN PROC  
@@ -37,6 +40,9 @@
             CALL PRINT_NEWLINE ;Changes DX and prints newline
             ADD SI, 2 ;Increase the pointer to array by 2 bytes to point to the next element of the array
         LOOP TOP
+
+        CALL INSERTION_SORT
+        CALL PRINT_NEWLINE
         ;return 0
         MOV AH, 4CH
         INT 21H
@@ -78,4 +84,56 @@
         END_INPUT_LOOP:
         RET
     INPUT_INTEGER ENDP
+
+    INSERTION_SORT PROC
+        ;for I = 1
+        MOV I, 1 ;Initialize I to 1
+        FOR:
+            ;IF (I >= N) then break the loop
+            MOV CX, N
+            CMP I, CX
+            JGE END_FOR
+            ;KEY = ARR[I]
+            MOV BX, I
+            SHL BX, 1  ;Offset ARR index by multiplying 2 with I
+            MOV CX, ARR[BX] ;CX is used as a temporary variable
+            MOV KEY, CX
+            ;J = I - 1
+            MOV CX, I
+            DEC CX
+            MOV J, CX   ;CX is used as a temporary variable
+
+            WHILE:
+                ;if(J < 0) then break the loop
+                CMP J, 0
+                JL END_WHILE
+                ;or if(ARR[J] <= KEY) then break the loop
+                MOV BX, J
+                SHL BX, 1  ;Offset ARR index by multiplying 2 with I
+                MOV CX, ARR[BX] ;CX is used as a temporary variable
+                CMP CX, KEY
+                JLE END_WHILE
+                ;else continue in the loop
+                ;ARR[J + 1] = ARR[J]
+                MOV BX, J
+                SHL BX, 1
+                MOV CX, ARR[BX]
+                ADD BX, 2
+                MOV ARR[BX], CX
+                ;J = J - 1
+                DEC J
+                JMP WHILE
+            END_WHILE:
+            ;ARR[J + 1] = KEY
+            MOV BX, J
+            INC BX
+            SHL BX, 1
+            MOV CX, KEY
+            MOV ARR[BX], CX ;CX is used as a temporary variable
+            
+            INC I   ;I++
+            JMP FOR
+        END_FOR:
+        RET
+    INSERTION_SORT ENDP
 END MAIN
