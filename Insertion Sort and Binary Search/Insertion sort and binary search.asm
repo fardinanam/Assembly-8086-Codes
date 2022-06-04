@@ -303,7 +303,8 @@
                 JMP SEARCH_WHILE
             FOUND:
                 ;if KEY == ARR(MID) then save the index in AX and return
-                MOV BX, CX
+                MOV BX, CX   
+                INC BX          ;Assuming array indexing to start from 1
         END_SEARCH_WHILE:
         RET
     BINARY_SEARCH ENDP
