@@ -61,4 +61,4 @@
             </p>
         </details>
     </div>
-- [Solution]()
+- [Solution](https://github.com/fardinanam/Assembly-8086-Practice-Codes/blob/master/If-Else%2C%20Cases%20and%20Loops%20Practices/Calculating%20number%20of%20faulty%20numbers.asm)
