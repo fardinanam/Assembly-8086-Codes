@@ -32,3 +32,16 @@
         </details>
     </div>
 - [Solution](https://github.com/fardinanam/Assembly-8086-Practice-Codes/blob/master/Insertion%20Sort%20and%20Binary%20Search/Insertion%20sort%20and%20binary%20search.asm)
+
+## Convert (3-9) based numbers to binary
+-   <div>
+        <summery>
+            Problem Specifications
+        </summery>
+        <details>
+            <p>
+                Take a base value from (3 to 9) as input from the user. Then take an input N in the base value of given base. Convert the given number to binary and display.  
+            </p>
+        </details>
+    </div>
+- [Solution]()
