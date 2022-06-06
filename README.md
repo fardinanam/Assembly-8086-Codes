@@ -75,4 +75,4 @@
             </p>
         </details>
     </div>
-- [Solution]()
+- [Solution](https://github.com/fardinanam/Assembly-8086-Practice-Codes/blob/bd2f8f6ecd9c5dd98a4a3dbb06b6f3d03935a7d5/Selection%20Sort/Selection%20sort%20in%20descending%20order.asm)
