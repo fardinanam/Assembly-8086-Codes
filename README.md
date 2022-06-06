@@ -35,7 +35,7 @@
     </div>
 - [Solution](https://github.com/fardinanam/Assembly-8086-Practice-Codes/blob/master/Insertion%20Sort%20and%20Binary%20Search/Insertion%20sort%20and%20binary%20search.asm)
 
-## Convert any based number to binary
+## Convert Any Based Number to Binary
 -   <div>
         <summery>
             Problem Specifications
@@ -49,7 +49,7 @@
     </div>
 - [Solution](https://github.com/fardinanam/Assembly-8086-Practice-Codes/blob/master/If-Else%2C%20Cases%20and%20Loops%20Practices/Convert%20any%20based%20numbers%20to%20binary.asm)
 
-## Calculating number of faulty numbers
+## Calculating Number of Faulty Numbers
 -   <div>
         <summery>
             Problem Specifications
@@ -62,3 +62,17 @@
         </details>
     </div>
 - [Solution](https://github.com/fardinanam/Assembly-8086-Practice-Codes/blob/master/If-Else%2C%20Cases%20and%20Loops%20Practices/Calculating%20number%20of%20faulty%20numbers.asm)
+
+## Selection Sort in Descending Order
+-   <div>
+        <summery>
+            Problem Specifications
+        </summery>
+        <details>
+            <p>
+                Take N integers as inputs from the user. Sort them in descending order using selection sort and display the sorted array for every step of the selection sort operation. Finally print the sorted array. <br>
+                <b>Note:</b> You can assume any form of number to be in the range of signed 16 bit register. 
+            </p>
+        </details>
+    </div>
+- [Solution]()
